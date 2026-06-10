@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #0D1F3C;
+  --color-blue: #1A56A0;
+  --color-blue-m: #4A90D9;
+  --color-blue-l: #E8F1FB;
+  --color-off-w: #F7F9FC;
+  --color-g1: #F2F4F7;
+  --color-g2: #D1D8E4;
+  --color-cotra-text: #2D3748;
+  --color-text-l: #6B7A90;
+  --color-green: #1A7A4A;
+  --color-amber: #E8A020;
+  --color-red-v: #C0392B;
+  --font-family-sans: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #F7F9FC;
+  color: #2D3748;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.pulse-dot { animation: pulse-dot 1.5s ease-in-out infinite; }
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.slide-down { animation: slide-down 0.18s ease-out; }
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.fade-in { animation: fade-in 0.22s ease-out; }
+
+@keyframes ai-car-vanish {
+  from { opacity: 1; transform: translateX(0) scale(1); }
+  to { opacity: 0; transform: translateX(90px) scale(0.97); }
+}
+.ai-car-vanish {
+  animation: ai-car-vanish 0.24s ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes checking {
+  0%   { width: 0%; }
+  100% { width: 100%; }
+}
+.checking-bar { animation: checking 1.2s ease-out forwards; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #F2F4F7; }
+::-webkit-scrollbar-thumb { background: #D1D8E4; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #6B7A90; }
+
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  body.printing-lane-plan * {
+    visibility: hidden !important;
+  }
+
+  body.printing-lane-plan,
+  body.printing-lane-plan #root {
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  body.printing-lane-plan .lane-plan-print-root,
+  body.printing-lane-plan .lane-plan-print-root * {
+    visibility: visible !important;
+  }
+
+  body.printing-lane-plan .lane-plan-print-root {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  body.printing-lane-plan .no-print {
+    display: none !important;
+  }
+}

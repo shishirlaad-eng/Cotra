@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>COTRA — Demo Walkthrough Deck</title>
+<style>
+  :root {
+    --navy:  #0D1F3C;
+    --blue:  #1A56A0;
+    --blueM: #4A90D9;
+    --blueL: #E8F1FB;
+    --white: #FFFFFF;
+    --offW:  #F7F9FC;
+    --g1:    #F2F4F7;
+    --g2:    #D1D8E4;
+    --text:  #2D3748;
+    --textL: #6B7A90;
+    --green: #1A7A4A;
+    --amber: #E8A020;
+    --red:   #C0392B;
+    --purple:#7C3AED;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', 'Inter', Arial, sans-serif; color: var(--text); }
+
+  .slide {
+    width: 1280px;
+    height: 720px;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+    background: var(--white);
+  }
+  .slide:last-child { page-break-after: auto; }
+
+  /* Common header bar */
+  .bar {
+    background: var(--navy);
+    color: #fff;
+    padding: 22px 44px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .bar .tag {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    font-weight: 700;
+  }
+  .bar .title {
+    font-size: 26px;
+    font-weight: 800;
+    margin-top: 4px;
+  }
+  .bar .logo {
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 1px;
+    text-align: right;
+  }
+  .footer {
+    position: absolute;
+    bottom: 18px;
+    left: 44px;
+    right: 44px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--textL);
+  }
+
+  /* ===================== SLIDE 1 — Existing Landscape ===================== */
+  .landscape-body { padding: 26px 44px; }
+  .landscape-sub {
+    font-size: 14px; color: var(--textL); margin-bottom: 18px; max-width: 1000px;
+  }
+  .sys-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .sys-card {
+    border: 1.5px solid var(--g2);
+    border-radius: 10px;
+    padding: 14px 18px;
+    background: var(--offW);
+  }
+  .sys-card .head {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
+  }
+  .sys-card .name { font-size: 15px; font-weight: 800; color: var(--text); }
+  .sys-card .scope {
+    font-size: 11px; font-weight: 700; color: var(--blue); background: var(--blueL);
+    padding: 3px 10px; border-radius: 10px;
+  }
+  .sys-card .status {
+    display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px;
+    border-radius: 8px; margin-bottom: 8px;
+  }
+  .status.operational { color: var(--green); background: #D1FAE5; }
+  .status.progress { color: var(--amber); background: #FEF3C7; }
+  .sys-card .desc { font-size: 12.5px; color: var(--textL); line-height: 1.5; }
+
+  .gap-banner {
+    margin-top: 18px;
+    border: 2px dashed var(--red);
+    border-radius: 10px;
+    background: #FEF2F2;
+    padding: 14px 22px;
+    display: flex; align-items: center; gap: 18px;
+  }
+  .gap-banner .label {
+    font-size: 12px; font-weight: 800; color: var(--red); letter-spacing: 1px;
+    text-transform: uppercase; flex-shrink: 0;
+  }
+  .gap-flow { display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 700; color: var(--text); flex: 1; justify-content: center; }
+  .gap-flow .box { background: var(--white); border: 1.5px solid var(--g2); border-radius: 8px; padding: 8px 16px; }
+  .gap-flow .arrow { color: var(--red); font-size: 16px; font-weight: 900; }
+  .gap-flow .manual { font-size: 11px; font-weight: 700; color: var(--red); }
+
+  /* ===================== PLAIN CENTERED TEXT SLIDES ===================== */
+  .center-slide {
+    height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: var(--navy);
+    color: #fff;
+    text-align: center;
+  }
+  .center-slide .eyebrow {
+    font-size: 14px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--blueM); font-weight: 700; margin-bottom: 18px;
+  }
+  .center-slide .big {
+    font-size: 64px; font-weight: 800; margin-bottom: 16px;
+  }
+  .center-slide .sub {
+    font-size: 18px; color: rgba(255,255,255,0.65); max-width: 700px; line-height: 1.6;
+  }
+  .center-slide .accent-line {
+    width: 90px; height: 4px; background: var(--blueM); border-radius: 2px; margin: 22px 0;
+  }
+
+  /* ===================== SLIDE 3 — RULES + AI PLANNER ===================== */
+  .rules-body {
+    position: relative;
+    padding: 30px 50px;
+    height: calc(100% - 92px);
+  }
+  .rule-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 28px;
+    height: 100%;
+    position: relative;
+  }
+  .rule-box {
+    border-radius: 12px;
+    padding: 18px 22px;
+    border: 2px solid;
+    position: relative;
+    z-index: 2;
+  }
+  .rule-box .rb-title {
+    font-size: 16px; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;
+  }
+  .rule-box .rb-sub { font-size: 11.5px; color: var(--textL); margin-bottom: 10px; }
+  .rule-box ul { list-style: none; }
+  .rule-box li {
+    font-size: 13px; padding: 5px 0 5px 20px; position: relative; color: var(--text); font-weight: 600;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  .rule-box li:last-child { border-bottom: none; }
+  .rule-box li::before {
+    content: '▸'; position: absolute; left: 0; font-weight: 900;
+  }
+  .rule-box.truck   { border-color: var(--blue);   background: #F4F8FE; }
+  .rule-box.truck li::before   { color: var(--blue); }
+  .rule-box.route   { border-color: var(--purple); background: #FAF7FF; }
+  .rule-box.route li::before   { color: var(--purple); }
+  .rule-box.driver  { border-color: var(--green);  background: #F2FBF6; }
+  .rule-box.driver li::before  { color: var(--green); }
+  .rule-box.compound{ border-color: var(--amber);  background: #FFFBF0; }
+  .rule-box.compound li::before{ color: var(--amber); }
+
+  .ai-center {
+    position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 280px; height: 150px;
+    background: var(--navy);
+    border-radius: 16px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: #fff; z-index: 5;
+    box-shadow: 0 10px 40px rgba(13,31,60,0.35);
+    border: 3px solid var(--blueM);
+    text-align: center;
+    padding: 14px;
+  }
+  .ai-center .icon { font-size: 30px; margin-bottom: 6px; }
+  .ai-center .t1 { font-size: 17px; font-weight: 800; }
+  .ai-center .t2 { font-size: 11.5px; color: rgba(255,255,255,0.65); margin-top: 6px; line-height: 1.5; }
+
+  /* connector arrows (svg overlay) */
+  .arrows-svg { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+
+  .rules-caption {
+    text-align: center; font-size: 13.5px; color: var(--textL); padding: 0 80px 14px;
+    margin-top: -6px;
+  }
+
+  /* ===================== SLIDE 5 — DASHBOARD 2 ===================== */
+  .dash-body { padding: 22px 40px; }
+  .dash-sub { font-size: 13px; color: var(--textL); margin-bottom: 16px; }
+
+  .timeline-section { margin-bottom: 22px; }
+  .section-label {
+    font-size: 12px; font-weight: 800; color: var(--navy); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-label .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blueM); }
+
+  .truck-row {
+    border: 1px solid var(--g2); border-radius: 10px; padding: 12px 18px; margin-bottom: 10px; background: var(--offW);
+  }
+  .truck-row .meta {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+  }
+  .truck-row .meta .id { font-size: 14px; font-weight: 800; color: var(--blue); font-family: monospace; }
+  .truck-row .meta .driver { font-size: 12px; color: var(--textL); }
+  .truck-row .meta .total {
+    font-size: 11px; font-weight: 700; color: var(--green); background: #D1FAE5; padding: 3px 10px; border-radius: 10px;
+  }
+
+  .tl-track { position: relative; height: 56px; }
+  .tl-line { position: absolute; top: 18px; left: 4%; right: 4%; height: 3px; background: var(--g2); border-radius: 2px; }
+  .tl-line-fill { position: absolute; top: 18px; left: 4%; height: 3px; background: var(--blueM); border-radius: 2px; }
+  .tl-stops { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 4%; }
+  .tl-stop { display: flex; flex-direction: column; align-items: center; width: 130px; }
+  .tl-stop .node {
+    width: 16px; height: 16px; border-radius: 50%; background: var(--blueM); border: 3px solid var(--white);
+    box-shadow: 0 0 0 2px var(--blueM); margin-top: 10px;
+  }
+  .tl-stop.pending .node { background: var(--g1); box-shadow: 0 0 0 2px var(--g2); }
+  .tl-stop .lab { font-size: 10.5px; font-weight: 700; color: var(--text); margin-top: 6px; text-align: center; }
+  .tl-stop .time { font-size: 10px; color: var(--textL); margin-top: 1px; }
+  .tl-stop .dur { font-size: 9.5px; color: var(--blueM); font-weight: 700; margin-top: 1px; }
+
+  .dispatch-table {
+    width: 100%; border-collapse: collapse; font-size: 12.5px;
+  }
+  .dispatch-table th {
+    background: var(--g1); color: var(--textL); font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.4px; text-align: left; padding: 8px 14px; border-bottom: 2px solid var(--g2);
+  }
+  .dispatch-table td {
+    padding: 9px 14px; border-bottom: 1px solid var(--g1); font-weight: 600;
+  }
+  .dispatch-table td.num { font-family: monospace; color: var(--blue); font-weight: 800; }
+  .dispatch-table td.tag {
+    text-align: center;
+  }
+  .ptime { font-weight: 800; padding: 2px 10px; border-radius: 10px; font-size: 11.5px; }
+  .ptime.fast { color: var(--green); background: #D1FAE5; }
+  .ptime.med  { color: var(--amber); background: #FEF3C7; }
+  .ptime.slow { color: var(--red); background: #FEE2E2; }
+
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+  @page { size: 1280px 720px; margin: 0; }
+</style>
+</head>
+<body>
+
+<!-- ============ SLIDE 1 — EXISTING SYSTEM LANDSCAPE (Section 02) ============ -->
+<section class="slide">
+  <div class="bar">
+    <div>
+      <div class="tag">Section 02 · Current State</div>
+      <div class="title">Existing Systems &amp; Landscape</div>
+    </div>
+    <div class="logo">COTRA AUTOTRANSPORT AG<br/>Dispatcher Workbench — Demo</div>
+  </div>
+  <div class="landscape-body">
+    <div class="landscape-sub">
+      COTRA already runs multiple platforms across operations. The gap is in the <strong>decision layer</strong> that should connect them.
+    </div>
+    <div class="sys-grid">
+      <div class="sys-card">
+        <div class="head">
+          <div class="name">Transit TMS — CH Soft</div>
+          <div class="scope">Orders via EDI (95%)</div>
+        </div>
+        <span class="status operational">● Operational</span>
+        <div class="desc">Swiss-built, on-premise. Customised for vehicles from pallet logistics. Manages orders, routes, drivers. In use since 2019. Cannot adopt AI — targeted for replacement in ~2 years.</div>
+      </div>
+      <div class="sys-card">
+        <div class="head">
+          <div class="name">INFORM SYNCROTESS — Yard Management</div>
+          <div class="scope">Compound only</div>
+        </div>
+        <span class="status operational">● Operational</span>
+        <div class="desc">Fully digitised, industry-standard at ports and rail hubs. Manages vehicle locations and compound operations at Studen. NOT directly integrated with TMS — handoff is via manual Excel export.</div>
+      </div>
+      <div class="sys-card">
+        <div class="head">
+          <div class="name">Salesforce CRM + MuleSoft Integration Layer</div>
+          <div class="scope">Future API hub</div>
+        </div>
+        <span class="status progress">◐ In progress</span>
+        <div class="desc">Multi-year transformation. Will centralise all operational data and expose APIs. Expected full rollout by end of 2026 — will become the primary integration hub for any future solution.</div>
+      </div>
+      <div class="sys-card">
+        <div class="head">
+          <div class="name">Samsara — Fleet Tracking</div>
+          <div class="scope">Trucks only</div>
+        </div>
+        <span class="status operational">● Operational</span>
+        <div class="desc">Tracks trucks and driver movement. Vehicle-to-truck allocation is NOT customer-facing. Real-time customer tracking is a growing future demand.</div>
+      </div>
+    </div>
+
+    <div class="gap-banner">
+      <div class="label">Critical Gap</div>
+      <div class="gap-flow">
+        <div class="box">Transit TMS</div>
+        <span class="arrow">→</span>
+        <div class="box">Excel Export <span class="manual">(manual step)</span></div>
+        <span class="arrow">→</span>
+        <div class="box">INFORM Yard SYNCROTESS</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>COTRA Autotransport AG — Internal Understanding Document</span>
+    <span>Hidden Brains Infotech · Confidential</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2 — ORDERS (PLAIN CENTERED) ============ -->
+<section class="slide">
+  <div class="center-slide">
+    <div class="eyebrow">Live System Walkthrough</div>
+    <div class="big">Orders</div>
+    <div class="accent-line"></div>
+    <div class="sub">
+      We will now switch to the live dispatcher workbench and walk through the Order Queue —
+      how incoming vehicle orders are received, prioritised and prepared for dispatch.
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3 — RULES ENGINE + AI ASSISTED PLANNER ============ -->
+<section class="slide">
+  <div class="bar">
+    <div>
+      <div class="tag">Concept · Decision Layer</div>
+      <div class="title">AI-Assisted Planner — Rules-Driven Route Planning</div>
+    </div>
+    <div class="logo">COTRA AUTOTRANSPORT AG<br/>Dispatcher Workbench — Demo</div>
+  </div>
+  <div class="rules-body">
+    <div class="rule-grid">
+      <svg class="arrows-svg" viewBox="0 0 1180 600" preserveAspectRatio="none">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#0D1F3C"/>
+          </marker>
+        </defs>
+        <!-- Truck Rules (top-left) -> AI center -->
+        <path d="M 520,140 L 520,250 L 480,250 L 480,290" stroke="#1A56A0" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+        <!-- Route Rules (top-right) -> AI center -->
+        <path d="M 660,140 L 660,250 L 700,250 L 700,290" stroke="#7C3AED" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+        <!-- Driver Rules (bottom-left) -> AI center -->
+        <path d="M 520,460 L 520,360 L 480,360 L 480,320" stroke="#1A7A4A" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+        <!-- Compound Rules (bottom-right) -> AI center -->
+        <path d="M 660,460 L 660,360 L 700,360 L 700,320" stroke="#E8A020" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+      </svg>
+
+      <div class="rule-box truck">
+        <div class="rb-title">🚚 Truck Rules</div>
+        <div class="rb-sub">Per-truck operational limits</div>
+        <ul>
+          <li>Deck position &amp; configuration (upper / lower)</li>
+          <li>Height limits per slot (e.g. 1.55m upper deck)</li>
+          <li>Weight limits &amp; axle balance</li>
+          <li>Loading sequence (LIFO by stop order)</li>
+        </ul>
+      </div>
+
+      <div class="rule-box route">
+        <div class="rb-title">🗺 Route Rules</div>
+        <div class="rb-sub">Shared constraints for every route</div>
+        <ul>
+          <li>Route geography &amp; dealer sequence</li>
+          <li>Split-route &amp; transfer leg logic</li>
+          <li>Country compliance (CH 4.0m / EU 4.3m)</li>
+          <li>Example: Route 2 → Geneva → Lucerne</li>
+        </ul>
+      </div>
+
+      <div class="rule-box driver">
+        <div class="rb-title">👤 Driver Rules</div>
+        <div class="rb-sub">Duty &amp; assignment limits</div>
+        <ul>
+          <li>Driver availability</li>
+          <li>Max working hours / day</li>
+          <li>Remaining hours before rest</li>
+          <li>Truck pairing &amp; legal rest compliance</li>
+        </ul>
+      </div>
+
+      <div class="rule-box compound">
+        <div class="rb-title">🏗 Compound Rules</div>
+        <div class="rb-sub">Yard &amp; staging constraints</div>
+        <ul>
+          <li>Staging lane allocation</li>
+          <li>Lane capacity &amp; vehicle sequence</li>
+          <li>Loading schedule &amp; yard prep time</li>
+          <li>Vehicle location tracking</li>
+        </ul>
+      </div>
+
+      <div class="ai-center">
+        <div class="icon">⚡</div>
+        <div class="t1">AI-Assisted Planner</div>
+        <div class="t2">Combines all four rule sets to auto-plan routes,<br/>trucks &amp; deck loading — flagging violations<br/>before dispatch.</div>
+      </div>
+    </div>
+  </div>
+  <div class="rules-caption">
+    Today, this logic exists only in dispatchers' heads. The AI-assisted planner codifies it into a constraint engine that proposes
+    a compliant plan in seconds — the dispatcher reviews and confirms.
+  </div>
+</section>
+
+<!-- ============ SLIDE 4 — ROUTE PLANNER (PLAIN CENTERED) ============ -->
+<section class="slide">
+  <div class="center-slide">
+    <div class="eyebrow">Live System Walkthrough</div>
+    <div class="big">Route Planner</div>
+    <div class="accent-line"></div>
+    <div class="sub">
+      We will now demonstrate the Route Planner — selecting a truck, auto-planning a route, arranging
+      the deck, and reviewing the lane loading plan generated by the system.
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5 — DASHBOARD 2: TRUCK TIMELINE ============ -->
+<section class="slide">
+  <div class="bar">
+    <div>
+      <div class="tag">New Concept · Operations View</div>
+      <div class="title">Dashboard 2 — Truck Dispatch Timeline</div>
+    </div>
+    <div class="logo">COTRA AUTOTRANSPORT AG<br/>Dispatcher Workbench — Demo</div>
+  </div>
+  <div class="dash-body">
+    <div class="dash-sub">End-to-end visibility of every truck's progress through the dispatch lifecycle, plus dispatcher planning performance.</div>
+
+    <div class="timeline-section">
+      <div class="section-label"><span class="dot"></span> Truck Timelines</div>
+
+      <div class="truck-row">
+        <div class="meta">
+          <div><span class="id">TRK-021</span> &nbsp; <span class="driver">Hans Weber</span></div>
+          <div class="total">Total cycle: 3h 10m</div>
+        </div>
+        <div class="tl-track">
+          <div class="tl-line"></div>
+          <div class="tl-line-fill" style="width:92%"></div>
+          <div class="tl-stops">
+            <div class="tl-stop">
+              <div class="node"></div>
+              <div class="lab">Truck Arrival</div>
+              <div class="time">06:40</div>
+            </div>
+            <div class="tl-stop">
+              <div class="node"></div>
+              <div class="lab">Route Planned</div>
+              <div class="time">06:52</div>
+              <div class="dur">+12 min</div>
+            </div>
+            <div class="tl-stop">
+              <div class="node"></div>
+              <div class="lab">Loading Start</div>
+              <div class="time">07:05</div>
+              <div class="dur">+13 min</div>
+            </div>
+            <div class="tl-stop">
+              <div class="node"></div>
+              <div class="lab">Loading Complete</div>
+              <div class="time">09:20</div>
+              <div class="dur">+135 min</div>
+            </div>
+            <div class="tl-stop">
+              <div class="node"></div>
+              <div class="lab">Dispatched</div>
+              <div class="time">09:50</div>
+              <div class="dur">+30 min</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="truck-row">
+        <div class="meta">
+          <div><span class="id">TRK-041</span> &nbsp; <span class="driver">Klaus Zimmermann</span></div>
+          <div class="total">Total cycle: 2h 45m</div>
+        </div>
+        <div class="tl-track">
+          <div class="tl-line"></div>
+          <div class="tl-line-fill" style="width:65%"></div>
+          <div class="tl-stops">
+            <div class="tl-stop">
+              <div class="node"></div>
+              <div class="lab">Truck Arrival</div>
+              <div class="time">07:10</div>
+            </div>
+            <div class="tl-stop">
+              <div class="node"></div>
+              <div class="lab">Route Planned</div>
+              <div class="time">07:18</div>
+              <div class="dur">+8 min</div>
+            </div>
+            <div class="tl-stop">
+              <div class="node"></div>
+              <div class="lab">Loading Start</div>
+              <div class="time">07:30</div>
+              <div class="dur">+12 min</div>
+            </div>
+            <div class="tl-stop pending">
+              <div class="node"></div>
+              <div class="lab">Loading Complete</div>
+              <div class="time">— in progress</div>
+            </div>
+            <div class="tl-stop pending">
+              <div class="node"></div>
+              <div class="lab">Dispatched</div>
+              <div class="time">— pending</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-section">
+      <div class="section-label"><span class="dot"></span> Dispatcher Planning Performance</div>
+      <table class="dispatch-table">
+        <thead>
+          <tr>
+            <th>Dispatcher</th>
+            <th>Truck Number</th>
+            <th style="text-align:center">Planning Time (mins)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Hans Weber</td>
+            <td class="num">TRK-021</td>
+            <td class="tag"><span class="ptime fast">12 min</span></td>
+          </tr>
+          <tr>
+            <td>Klaus Zimmermann</td>
+            <td class="num">TRK-041</td>
+            <td class="tag"><span class="ptime fast">8 min</span></td>
+          </tr>
+          <tr>
+            <td>Maria Schneider</td>
+            <td class="num">TRK-031</td>
+            <td class="tag"><span class="ptime med">22 min</span></td>
+          </tr>
+          <tr>
+            <td>Peter Brunner</td>
+            <td class="num">TRK-025</td>
+            <td class="tag"><span class="ptime slow">38 min</span></td>
+          </tr>
+          <tr>
+            <td>Hans Weber</td>
+            <td class="num">TRK-027</td>
+            <td class="tag"><span class="ptime med">19 min</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="footer">
+    <span>COTRA Autotransport AG — Dispatcher Workbench Prototype</span>
+    <span>Demo build — for client walkthrough</span>
+  </div>
+</section>
+
+</body>
+</html>
