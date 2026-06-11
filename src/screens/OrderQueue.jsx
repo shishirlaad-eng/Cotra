@@ -8,6 +8,14 @@ const priorityMeta = {
   Normal:   { color: C.green, bg: '#D1FAE5', dot: '🟢', sort: 2 },
 }
 
+const statusMeta = {
+  Unassigned: { color: C.amber, bg: '#FEF3C7' },
+  Assigned:   { color: C.blue,  bg: C.blueL },
+  'In Transit': { color: C.blueM, bg: C.blueL },
+  Delivered:  { color: C.green, bg: '#D1FAE5' },
+  Violation:  { color: C.red,   bg: '#FEE2E2' },
+}
+
 const AI_PLAN_STEPS = [
   { icon: '🚗', text: 'Picking cars from the queue...' },
   { icon: '🚛', text: 'Finding an available truck...' },
@@ -62,11 +70,16 @@ function AIPlanningModal({ plannedOrders, onCarPicked, onDone }) {
   )
 }
 
-const fitScores = [
-  { truckId: 'TRK-025', score: 96, reason: 'Capacity OK · Weight OK · Route match' },
-  { truckId: 'TRK-033', score: 88, reason: 'Capacity OK · Slight detour' },
-  { truckId: 'TRK-031', score: 71, reason: 'Near capacity · Weight borderline' },
-]
+function StatusCell({ status }) {
+  const sm = statusMeta[status] || { color: C.textL, bg: C.g1 }
+  return (
+    <span style={{
+      display: 'inline-block', fontSize: 11, fontWeight: 700,
+      color: sm.color, background: sm.bg, borderRadius: 4,
+      padding: '3px 8px', whiteSpace: 'nowrap',
+    }}>{status}</span>
+  )
+}
 
 function VehicleCell({ vehicle }) {
   const tall   = vehicle.height > 1.6
@@ -87,74 +100,28 @@ function VehicleCell({ vehicle }) {
   )
 }
 
-function ExpandedRow({ order, vehicle, onAssign }) {
+function ExpandedRow({ order, vehicle }) {
   return (
     <tr className="slide-down">
-      <td colSpan={10} style={{ padding: 0, background: C.blueL, borderTop: `1px solid ${C.g2}`, borderBottom: `2px solid ${C.blueM}` }}>
-        <div style={{ padding: '16px 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-          {/* Vehicle spec */}
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 12.5, color: C.text, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Full Vehicle Specification</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 16px' }}>
-              {[
-                ['Make / Model', `${vehicle.make} ${vehicle.model}`],
-                ['Category', vehicle.category],
-                ['Height', `${vehicle.height} m`],
-                ['Weight', `${vehicle.weight.toLocaleString()} kg`],
-                ['Fuel Type', vehicle.type],
-                ['Origin', order.from],
-                ['Destination', order.to],
-                ['ETA', order.eta],
-              ].map(([k, v]) => (
-                <div key={k}>
-                  <div style={{ fontSize: 10.5, color: C.textL, fontWeight: 500 }}>{k}</div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{v}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Suggested trucks */}
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 12.5, color: C.text, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Suggested Trucks — Ranked by Fit</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {fitScores.map((t, i) => (
-                <div key={t.truckId} style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  background: C.white, border: `1px solid ${C.g2}`, borderRadius: 6, padding: '8px 12px',
-                }}>
-                  <span style={{
-                    width: 20, height: 20, borderRadius: '50%',
-                    background: i === 0 ? C.blue : C.g2,
-                    color: i === 0 ? '#fff' : C.textL,
-                    fontSize: 10, fontWeight: 700,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    flexShrink: 0,
-                  }}>{i + 1}</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 12.5, fontWeight: 700, color: C.text }}>{t.truckId}</div>
-                    <div style={{ fontSize: 10.5, color: C.textL }}>{t.reason}</div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{
-                      fontSize: 13, fontWeight: 800,
-                      color: t.score >= 90 ? C.green : t.score >= 75 ? C.amber : C.red,
-                    }}>{t.score}%</span>
-                    <button
-                      onClick={() => onAssign(order.id, t.truckId)}
-                      style={{
-                        background: i === 0 ? C.blue : 'transparent',
-                        color: i === 0 ? '#fff' : C.blue,
-                        border: `1px solid ${C.blue}`,
-                        borderRadius: 5, padding: '4px 10px',
-                        fontSize: 11, fontWeight: 600, cursor: 'pointer',
-                        fontFamily: 'Inter, sans-serif',
-                      }}
-                    >{i === 0 ? 'Assign' : 'Select'}</button>
-                  </div>
-                </div>
-              ))}
-            </div>
+      <td colSpan={9} style={{ padding: 0, background: C.blueL, borderTop: `1px solid ${C.g2}`, borderBottom: `2px solid ${C.blueM}` }}>
+        <div style={{ padding: '16px 20px' }}>
+          <div style={{ fontWeight: 700, fontSize: 12.5, color: C.text, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Full Vehicle Specification</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px 16px' }}>
+            {[
+              ['Make / Model', `${vehicle.make} ${vehicle.model}`],
+              ['Category', vehicle.category],
+              ['Height', `${vehicle.height} m`],
+              ['Weight', `${vehicle.weight.toLocaleString()} kg`],
+              ['Fuel Type', vehicle.type],
+              ['Origin', order.from],
+              ['Destination', order.to],
+              ['ETA', order.eta],
+            ].map(([k, v]) => (
+              <div key={k}>
+                <div style={{ fontSize: 10.5, color: C.textL, fontWeight: 500 }}>{k}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{v}</div>
+              </div>
+            ))}
           </div>
         </div>
       </td>
@@ -172,10 +139,10 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
   const [filterDealer, setFilterDealer] = useState('')
   const [filterType, setFilterType] = useState('')
   const [filterPriority, setFilterPriority] = useState('')
+  const [filterStatus, setFilterStatus] = useState('')
   const [filterDate, setFilterDate] = useState('')
   const [sortBy, setSortBy] = useState('priority')
   const [expanded, setExpanded] = useState(null)
-  const [selected, setSelected] = useState(new Set())
   const [page, setPage] = useState(0)
   const PAGE_SIZE = 8
 
@@ -188,7 +155,7 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
   const unassigned = useMemo(() => orders.filter(o => o.status === 'Unassigned'), [orders])
 
   const filtered = useMemo(() => {
-    let arr = unassigned.map(o => ({ ...o, vehicle: getVehicle(o.vehicleId) }))
+    let arr = orders.map(o => ({ ...o, vehicle: getVehicle(o.vehicleId) }))
     if (search) arr = arr.filter(o =>
       o.id.toLowerCase().includes(search.toLowerCase()) ||
       o.to.toLowerCase().includes(search.toLowerCase()) ||
@@ -198,6 +165,7 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
     if (filterDealer)   arr = arr.filter(o => o.to === filterDealer)
     if (filterType)     arr = arr.filter(o => o.vehicle.type === filterType)
     if (filterPriority) arr = arr.filter(o => o.priority === filterPriority)
+    if (filterStatus)   arr = arr.filter(o => o.status === filterStatus)
     if (filterDate)     arr = arr.filter(o => o.dispatchDate === filterDate)
 
     arr.sort((a, b) => {
@@ -208,7 +176,7 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
       return 0
     })
     return arr
-  }, [unassigned, search, filterCompound, filterDealer, filterType, filterPriority, filterDate, sortBy])
+  }, [orders, search, filterCompound, filterDealer, filterType, filterPriority, filterStatus, filterDate, sortBy])
 
   const paginated = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
@@ -216,7 +184,7 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
   const startAIPlanning = () => {
     setPage(0)
     setExpanded(null)
-    setPlannedOrders(filtered.slice(0, 8))
+    setPlannedOrders(filtered.filter(o => o.status === 'Unassigned').slice(0, 8))
     setVanishingIds(new Set())
     setHiddenIds(new Set())
     setAiPlanning(true)
@@ -232,27 +200,6 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
         return next
       })
     }, 230)
-  }
-
-  const handleAssign = (orderId, truckId) => {
-    setOrders(prev => prev.map(o => o.id === orderId
-      ? { ...o, status: 'Assigned', truckId, dispatcher: 'Hans Weber' }
-      : o
-    ))
-    showToast(`Order ${orderId} assigned to ${truckId}`, 'success')
-    setExpanded(null)
-  }
-
-  const handleDateChange = (orderId, dispatchDate) => {
-    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, dispatchDate } : o))
-  }
-
-  const toggleSelect = (id) => {
-    setSelected(prev => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
   }
 
   const sel = (label, value, current, setter, options) => (
@@ -278,12 +225,12 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
         <div>
           <div style={{ fontSize: 20, fontWeight: 700, color: C.text }}>Order Queue</div>
           <div style={{ fontSize: 13, color: C.textL, marginTop: 2 }}>
-            {filtered.length} of {unassigned.length} unassigned orders awaiting dispatch
+            {filtered.length} of {orders.length} orders ({unassigned.length} unassigned)
           </div>
         </div>
         <button
           onClick={startAIPlanning}
-          disabled={aiPlanning || filtered.length === 0}
+          disabled={aiPlanning || filtered.filter(o => o.status === 'Unassigned').length === 0}
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
             background: C.navy, color: '#fff', border: 'none', borderRadius: 8,
@@ -326,6 +273,7 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
         {sel('Dealer', 'filterDealer', filterDealer, setFilterDealer, ['Zurich AMAG', 'Bern AutoZentrum', 'Basel Autohaus', 'Geneva Auto AG', 'Lucerne Motors', 'St. Gallen VW'])}
         {sel('Vehicle Type', 'filterType', filterType, setFilterType, ['ICE', 'EV'])}
         {sel('Priority', 'filterPriority', filterPriority, setFilterPriority, ['Critical', 'High', 'Normal'])}
+        {sel('Status', 'filterStatus', filterStatus, setFilterStatus, ['Unassigned', 'Assigned', 'In Transit', 'Delivered', 'Violation'])}
 
         <input
           type="date"
@@ -358,27 +306,6 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
             }}>{s === 'dispatchDate' ? 'Dispatch Date' : s}</button>
           ))}
         </div>
-
-        <div style={{ marginLeft: 'auto' }}>
-          <button
-            disabled={selected.size === 0}
-            onClick={() => {
-              const ids = [...selected]
-              setOrders(prev => prev.map(o => ids.includes(o.id) && o.status === 'Unassigned'
-                ? { ...o, status: 'Assigned', dispatcher: 'Hans Weber' } : o
-              ))
-              showToast(`Bulk assigned ${selected.size} orders`, 'success')
-              setSelected(new Set())
-            }}
-            style={{
-              background: selected.size > 0 ? C.blue : C.g2,
-              color: selected.size > 0 ? '#fff' : C.textL,
-              border: 'none', borderRadius: 6, padding: '7px 14px',
-              fontSize: 12.5, fontWeight: 700, cursor: selected.size > 0 ? 'pointer' : 'default',
-              fontFamily: 'Inter, sans-serif', transition: 'background 0.15s',
-            }}
-          >Bulk Assign{selected.size > 0 ? ` (${selected.size})` : ''}</button>
-        </div>
       </div>
 
       {/* Table */}
@@ -386,12 +313,7 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5 }}>
           <thead>
             <tr style={{ background: C.g1 }}>
-              <th style={{ padding: '10px 14px', width: 32 }}>
-                <input type="checkbox" onChange={e => {
-                  setSelected(e.target.checked ? new Set(paginated.map(o => o.id)) : new Set())
-                }} checked={selected.size === paginated.length && paginated.length > 0} />
-              </th>
-              {['Priority', 'Order ID', 'Vehicle Details', 'From', 'To Dealer', 'ETA', 'Dispatcher', 'Dispatch Date', 'Actions'].map(h => (
+              {['Priority', 'Order ID', 'Vehicle Details', 'From', 'To Dealer', 'ETA', 'Status', 'Dispatcher', 'Actions'].map(h => (
                 <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 600, color: C.textL, fontSize: 11, letterSpacing: 0.3, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
               ))}
             </tr>
@@ -414,9 +336,6 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
                     onMouseEnter={e => { if (!isExpanded) e.currentTarget.style.background = C.blueL }}
                     onMouseLeave={e => { if (!isExpanded) e.currentTarget.style.background = i % 2 === 0 ? C.white : '#FAFBFD' }}
                   >
-                    <td style={{ padding: '10px 14px' }} onClick={e => e.stopPropagation()}>
-                      <input type="checkbox" checked={selected.has(order.id)} onChange={() => toggleSelect(order.id)} />
-                    </td>
                     <td style={{ padding: '10px 14px', whiteSpace: 'nowrap' }}>
                       <span style={{ fontSize: 14 }}>{pm.dot}</span>
                       <span style={{ marginLeft: 4, fontSize: 11, fontWeight: 700, color: pm.color }}>{order.priority}</span>
@@ -426,19 +345,8 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
                     <td style={{ padding: '10px 14px', color: C.textL, fontSize: 12 }}>{order.from}</td>
                     <td style={{ padding: '10px 14px', fontWeight: 600, color: C.text, fontSize: 12 }}>{order.to}</td>
                     <td style={{ padding: '10px 14px', fontWeight: 600, color: C.text, fontVariantNumeric: 'tabular-nums', fontSize: 12 }}>{order.eta}</td>
+                    <td style={{ padding: '10px 14px' }}><StatusCell status={order.status} /></td>
                     <td style={{ padding: '10px 14px', color: C.textL, fontSize: 12 }}>{order.dispatcher || <span style={{ color: C.amber, fontWeight: 600 }}>—</span>}</td>
-                    <td style={{ padding: '10px 14px' }} onClick={e => e.stopPropagation()}>
-                      <input
-                        type="date"
-                        value={order.dispatchDate || ''}
-                        onChange={e => handleDateChange(order.id, e.target.value)}
-                        style={{
-                          border: `1px solid ${C.g2}`, borderRadius: 5, padding: '5px 8px',
-                          fontSize: 12, color: C.text, background: C.white,
-                          cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-                        }}
-                      />
-                    </td>
                     <td style={{ padding: '10px 14px' }} onClick={e => e.stopPropagation()}>
                       <div style={{ display: 'flex', gap: 5 }}>
                         <button
@@ -453,7 +361,7 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
                       </div>
                     </td>
                   </tr>
-                  {isExpanded && <ExpandedRow key={`exp-${order.id}`} order={order} vehicle={order.vehicle} onAssign={handleAssign} />}
+                  {isExpanded && <ExpandedRow key={`exp-${order.id}`} order={order} vehicle={order.vehicle} />}
                 </>
               )
             })}

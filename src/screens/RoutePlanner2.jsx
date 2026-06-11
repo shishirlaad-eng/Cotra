@@ -1470,11 +1470,9 @@ export default function RoutePlanner2({ showToast, onDispatch, aiPlanReady = fal
   const [selectedTruck, setSelectedTruck] = useState(initialAITruck)
   const [activeRoute, setActiveRoute] = useState(initialAIRoute)
   const [plan, setPlan] = useState(() => aiPlanReady ? autoArrange(initialAIRoute, plannerOrders2) : null)
-  const [truckFilter, setTruckFilter] = useState('All')
   const [verified, setVerified] = useState(false)
 
-  const filters = ['All','Available','Loading','En Route','Maintenance']
-  const visibleTrucks = truckFilter === 'All' ? plannerTrucks : plannerTrucks.filter(t => t.status === truckFilter)
+  const visibleTrucks = plannerTrucks.filter(t => t.status === 'Available')
 
   const handleSelectTruck = (truck) => {
     setSelectedTruck(truck)
@@ -1544,17 +1542,7 @@ export default function RoutePlanner2({ showToast, onDispatch, aiPlanReady = fal
       {/* ── Left: Truck list ──────────────────────────────────────────────── */}
       <div style={{ width: 270, background: C.white, borderRight: `1px solid ${C.g2}`, display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
         <div style={{ padding: '14px 14px 10px', borderBottom: `1px solid ${C.g1}` }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 8 }}>Fleet — Select Truck</div>
-          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-            {filters.map(f => (
-              <button key={f} onClick={() => setTruckFilter(f)} style={{
-                padding: '3px 9px', border: `1px solid ${truckFilter === f ? C.blue : C.g2}`,
-                borderRadius: 12, background: truckFilter === f ? C.blueL : 'transparent',
-                color: truckFilter === f ? C.blue : C.textL,
-                fontSize: 11, fontWeight: truckFilter === f ? 700 : 400, cursor: 'pointer',
-              }}>{f}</button>
-            ))}
-          </div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: C.text }}>Fleet — Select Truck</div>
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto', padding: '10px 12px' }}>

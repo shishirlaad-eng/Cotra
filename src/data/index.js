@@ -249,8 +249,10 @@ export const plannerTrucks = [
   },
 ]
 
+const ROUTE_OPTIONS = ['Route Z→B→BA', 'Route GE→LU', 'Route SG→ZH', 'Route ZH→LU→GE', 'Route BA→BE→SG']
+
 export const initialRules = {
-  truck: Object.fromEntries(plannerTrucks.slice(0, 10).map(truck => [truck.id, {
+  truck: Object.fromEntries(plannerTrucks.slice(0, 10).map((truck, index) => [truck.id, {
     id: truck.id,
     label: truck.id,
     subtitle: `${truck.plate} · ${truck.driver} · ${truck.status}`,
@@ -260,6 +262,7 @@ export const initialRules = {
       { id: 'heightClearance', name: 'Height Clearance', desc: 'Maximum transport height for this truck', value: String(truck.maxHeight), unit: 'm', enabled: true },
       { id: 'upperDeckHeight', name: 'Upper Deck Limit', desc: 'Maximum vehicle height permitted on upper deck', value: '1.55', unit: 'm', enabled: true },
       { id: 'loadingSequence', name: 'Rear-first Loading', desc: 'Enforce LIFO loading sequence for route stops', value: '', unit: '—', enabled: true },
+      { id: 'assignedRoute', name: 'Assigned Route', desc: 'Saved route this truck is planned on', value: ROUTE_OPTIONS[index % ROUTE_OPTIONS.length], unit: '—', enabled: true, options: ROUTE_OPTIONS },
     ],
   }])),
   driver: Object.fromEntries(plannerTrucks.slice(0, 10).map(truck => [truck.driver, {

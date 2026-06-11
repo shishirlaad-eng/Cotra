@@ -28,7 +28,7 @@ function RuleTable({ rules, onToggle, onValueChange }) {
   return (
     <div>
       <div style={{
-        display: 'grid', gridTemplateColumns: '210px 1fr 110px 70px 70px',
+        display: 'grid', gridTemplateColumns: '210px 1fr 150px 70px 70px',
         background: C.g1, borderTop: `1px solid ${C.g2}`, borderBottom: `1px solid ${C.g2}`,
       }}>
         {['Parameter', 'Description', 'Value', 'Unit', 'Active'].map(label => (
@@ -40,13 +40,26 @@ function RuleTable({ rules, onToggle, onValueChange }) {
 
       {rules.map(rule => (
         <div key={rule.id} style={{
-          display: 'grid', gridTemplateColumns: '210px 1fr 110px 70px 70px',
+          display: 'grid', gridTemplateColumns: '210px 1fr 150px 70px 70px',
           alignItems: 'center', borderBottom: `1px solid ${C.g1}`, opacity: rule.enabled ? 1 : 0.5,
         }}>
           <div style={{ padding: '11px 14px', fontSize: 13, fontWeight: 700, color: C.text }}>{rule.name}</div>
           <div style={{ padding: '11px 14px', fontSize: 12, color: C.textL }}>{rule.desc}</div>
           <div style={{ padding: '8px 10px' }}>
-            {rule.value ? (
+            {rule.options ? (
+              <select
+                value={rule.value}
+                disabled={!rule.enabled}
+                onChange={event => onValueChange(rule.id, event.target.value)}
+                style={{
+                  width: '100%', border: `1px solid ${C.g2}`, borderRadius: 5, padding: '6px 8px',
+                  fontSize: 12.5, fontWeight: 700, color: C.text,
+                  background: rule.enabled ? C.white : C.g1, outline: 'none', cursor: rule.enabled ? 'pointer' : 'default',
+                }}
+              >
+                {rule.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+              </select>
+            ) : rule.value ? (
               <input
                 value={rule.value}
                 disabled={!rule.enabled}
