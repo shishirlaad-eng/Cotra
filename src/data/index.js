@@ -1,5 +1,5 @@
 export const dispatchers = [
-  { id: 'HW', name: 'Hans Weber',       ordersToday: 24, routesActive: 3, avgCompletion: '1.8 hrs', efficiency: 94 },
+  { id: 'HW', name: 'Roger',       ordersToday: 24, routesActive: 3, avgCompletion: '1.8 hrs', efficiency: 94 },
   { id: 'KZ', name: 'Klaus Zimmermann', ordersToday: 31, routesActive: 4, avgCompletion: '2.1 hrs', efficiency: 88 },
   { id: 'MS', name: 'Maria Schneider',  ordersToday: 28, routesActive: 3, avgCompletion: '1.6 hrs', efficiency: 96 },
   { id: 'PB', name: 'Peter Brunner',    ordersToday: 19, routesActive: 2, avgCompletion: '2.4 hrs', efficiency: 72 },
@@ -17,20 +17,20 @@ export const vehicleCatalogue = [
 ]
 
 export const initialOrders = [
-  { id: 'CH-2841', vehicleId: 'VH-001', from: 'Studen',   to: 'Bern AutoZentrum',  dispatcher: 'Hans Weber',       status: 'In Transit', priority: 'Normal',   eta: '09:15', created: '07:00', truckId: 'TRK-021', dispatchDate: '2026-06-10' },
+  { id: 'CH-2841', vehicleId: 'VH-001', from: 'Studen',   to: 'Bern AutoZentrum',  dispatcher: 'Roger',       status: 'In Transit', priority: 'Normal',   eta: '09:15', created: '07:00', truckId: 'TRK-021', dispatchDate: '2026-06-10' },
   { id: 'CH-2842', vehicleId: 'VH-002', from: 'Lupfig',   to: 'Zurich AMAG',       dispatcher: 'Klaus Zimmermann', status: 'Assigned',   priority: 'High',     eta: '10:30', created: '07:15', truckId: 'TRK-041', dispatchDate: '2026-06-10' },
   { id: 'CH-2843', vehicleId: 'VH-003', from: 'Studen',   to: 'Basel Autohaus',    dispatcher: null,               status: 'Unassigned', priority: 'Critical', eta: '11:00', created: '07:30', truckId: null, dispatchDate: '2026-06-10' },
   { id: 'CH-2844', vehicleId: 'VH-006', from: 'Rümlang',  to: 'Geneva Auto AG',    dispatcher: 'Maria Schneider',  status: 'Violation',  priority: 'Critical', eta: '12:00', created: '06:45', truckId: 'TRK-031', dispatchDate: '2026-06-10' },
   { id: 'CH-2845', vehicleId: 'VH-007', from: 'Lupfig',   to: 'St. Gallen VW',     dispatcher: 'Peter Brunner',    status: 'Delivered',  priority: 'Normal',   eta: '08:30', created: '06:00', truckId: 'TRK-021', dispatchDate: '2026-06-09' },
   { id: 'CH-2846', vehicleId: 'VH-004', from: 'Studen',   to: 'Lucerne Motors',    dispatcher: null,               status: 'Unassigned', priority: 'High',     eta: '13:00', created: '08:00', truckId: null, dispatchDate: '2026-06-11' },
-  { id: 'CH-2847', vehicleId: 'VH-002', from: 'Lupfig',   to: 'Zurich AMAG',       dispatcher: 'Hans Weber',       status: 'In Transit', priority: 'High',     eta: '11:00', created: '07:45', truckId: 'TRK-041', dispatchDate: '2026-06-10' },
+  { id: 'CH-2847', vehicleId: 'VH-002', from: 'Lupfig',   to: 'Zurich AMAG',       dispatcher: 'Roger',       status: 'In Transit', priority: 'High',     eta: '11:00', created: '07:45', truckId: 'TRK-041', dispatchDate: '2026-06-10' },
   { id: 'CH-2848', vehicleId: 'VH-005', from: 'Studen',   to: 'Bern AutoZentrum',  dispatcher: 'Klaus Zimmermann', status: 'Assigned',   priority: 'Normal',   eta: '14:00', created: '08:30', truckId: 'TRK-033', dispatchDate: '2026-06-10' },
   { id: 'CH-2849', vehicleId: 'VH-008', from: 'Rümlang',  to: 'Basel Autohaus',    dispatcher: null,               status: 'Unassigned', priority: 'Normal',   eta: '15:00', created: '09:00', truckId: null, dispatchDate: '2026-06-11' },
   { id: 'CH-2850', vehicleId: 'VH-001', from: 'Lupfig',   to: 'Geneva Auto AG',    dispatcher: 'Maria Schneider',  status: 'Assigned',   priority: 'Normal',   eta: '16:00', created: '09:15', truckId: 'TRK-033', dispatchDate: '2026-06-10' },
   { id: 'CH-2851', vehicleId: 'VH-005', from: 'Studen',   to: 'Lucerne Motors',    dispatcher: null,               status: 'Unassigned', priority: 'Critical', eta: '10:00', created: '08:45', truckId: null, dispatchDate: '2026-06-10' },
   { id: 'CH-2852', vehicleId: 'VH-007', from: 'Rümlang',  to: 'Zurich AMAG',       dispatcher: 'Peter Brunner',    status: 'Assigned',   priority: 'High',     eta: '12:30', created: '09:00', truckId: 'TRK-025', dispatchDate: '2026-06-10' },
   { id: 'CH-2853', vehicleId: 'VH-003', from: 'Lupfig',   to: 'St. Gallen VW',     dispatcher: null,               status: 'Unassigned', priority: 'Normal',   eta: '16:30', created: '09:30', truckId: null, dispatchDate: '2026-06-12' },
-  { id: 'CH-2854', vehicleId: 'VH-008', from: 'Studen',   to: 'Basel Autohaus',    dispatcher: 'Hans Weber',       status: 'Violation',  priority: 'Critical', eta: '09:45', created: '06:30', truckId: 'TRK-027', dispatchDate: '2026-06-10' },
+  { id: 'CH-2854', vehicleId: 'VH-008', from: 'Studen',   to: 'Basel Autohaus',    dispatcher: 'Roger',       status: 'Violation',  priority: 'Critical', eta: '09:45', created: '06:30', truckId: 'TRK-027', dispatchDate: '2026-06-10' },
 ]
 
 export const initialTrucks = [

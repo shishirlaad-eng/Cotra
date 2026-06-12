@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { C } from '../colors'
-import { vehicleCatalogue, initialTrucks } from '../data'
+import { vehicleCatalogue, plannerTrucks } from '../data'
+import RoutePopup from '../components/RoutePopup'
 
 const priorityMeta = {
   Critical: { color: C.red,   bg: '#FEE2E2', dot: '🔴', sort: 0 },
@@ -103,7 +104,7 @@ function VehicleCell({ vehicle }) {
 function ExpandedRow({ order, vehicle }) {
   return (
     <tr className="slide-down">
-      <td colSpan={9} style={{ padding: 0, background: C.blueL, borderTop: `1px solid ${C.g2}`, borderBottom: `2px solid ${C.blueM}` }}>
+      <td colSpan={8} style={{ padding: 0, background: C.blueL, borderTop: `1px solid ${C.g2}`, borderBottom: `2px solid ${C.blueM}` }}>
         <div style={{ padding: '16px 20px' }}>
           <div style={{ fontWeight: 700, fontSize: 12.5, color: C.text, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Full Vehicle Specification</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px 16px' }}>
@@ -129,7 +130,8 @@ function ExpandedRow({ order, vehicle }) {
   )
 }
 
-export default function OrderQueue({ orders, setOrders, filters, showToast, onAIPlan }) {
+export default function OrderQueue({ orders, setOrders, rules, routes, filters, showToast, onAIPlan, onOrderPlan }) {
+  const [planningOrder, setPlanningOrder] = useState(null)
   const [aiPlanning, setAiPlanning] = useState(false)
   const [plannedOrders, setPlannedOrders] = useState([])
   const [vanishingIds, setVanishingIds] = useState(new Set())
@@ -202,6 +204,23 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
     }, 230)
   }
 
+  // Trucks running on the chosen route — matched by their Rules-Engine "Assigned Route".
+  // Custom routes (no saved match) fall back to all available trucks.
+  const getTrucksForRoute = (route) => {
+    const truckRules = rules?.truck || {}
+    const matched = plannerTrucks.filter(t => {
+      const assigned = truckRules[t.id]?.rules.find(r => r.id === 'assignedRoute')?.value
+      return assigned === route.name
+    })
+    if (matched.length) return matched
+    return plannerTrucks.filter(t => t.status === 'Available')
+  }
+
+  const handleAssignTruck = ({ route, truck }) => {
+    onOrderPlan?.({ orderId: planningOrder.id, truckId: truck.id, route })
+    setPlanningOrder(null)
+  }
+
   const sel = (label, value, current, setter, options) => (
     <select
       value={current}
@@ -250,6 +269,22 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
             setAiPlanning(false)
             onAIPlan?.(plannedOrders.map(order => order.id))
           }}
+        />
+      )}
+
+      {planningOrder && (
+        <RoutePopup
+          vehicle={{
+            id: planningOrder.id,
+            to: planningOrder.to,
+            vehicleName: `${planningOrder.vehicle.make} ${planningOrder.vehicle.model}`,
+          }}
+          mode="plan-truck"
+          ctaLabel="Plan Truck →"
+          routes={routes}
+          getTrucksForRoute={getTrucksForRoute}
+          onAssign={handleAssignTruck}
+          onClose={() => setPlanningOrder(null)}
         />
       )}
 
@@ -313,7 +348,7 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5 }}>
           <thead>
             <tr style={{ background: C.g1 }}>
-              {['Priority', 'Order ID', 'Vehicle Details', 'From', 'To Dealer', 'ETA', 'Status', 'Dispatcher', 'Actions'].map(h => (
+              {['Priority', 'Order ID', 'Vehicle Details', 'From', 'To Dealer', 'ETA', 'Status', 'Actions'].map(h => (
                 <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 600, color: C.textL, fontSize: 11, letterSpacing: 0.3, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
               ))}
             </tr>
@@ -346,9 +381,19 @@ export default function OrderQueue({ orders, setOrders, filters, showToast, onAI
                     <td style={{ padding: '10px 14px', fontWeight: 600, color: C.text, fontSize: 12 }}>{order.to}</td>
                     <td style={{ padding: '10px 14px', fontWeight: 600, color: C.text, fontVariantNumeric: 'tabular-nums', fontSize: 12 }}>{order.eta}</td>
                     <td style={{ padding: '10px 14px' }}><StatusCell status={order.status} /></td>
-                    <td style={{ padding: '10px 14px', color: C.textL, fontSize: 12 }}>{order.dispatcher || <span style={{ color: C.amber, fontWeight: 600 }}>—</span>}</td>
                     <td style={{ padding: '10px 14px' }} onClick={e => e.stopPropagation()}>
                       <div style={{ display: 'flex', gap: 5 }}>
+                        {order.status === 'Unassigned' && (
+                          <button
+                            onClick={() => setPlanningOrder(order)}
+                            style={{
+                              background: C.blue, border: 'none',
+                              borderRadius: 4, padding: '3px 10px', fontSize: 11,
+                              fontWeight: 700, cursor: 'pointer', color: '#fff',
+                              fontFamily: 'Inter, sans-serif',
+                            }}
+                          >🗺 Plan</button>
+                        )}
                         <button
                           onClick={() => setExpanded(isExpanded ? null : order.id)}
                           style={{

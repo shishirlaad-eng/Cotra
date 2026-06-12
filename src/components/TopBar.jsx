@@ -68,9 +68,9 @@ export default function TopBar({ screen }) {
             borderRadius: '50%',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: '#fff', fontSize: 12, fontWeight: 700,
-          }}>HW</div>
+          }}>R</div>
           <div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: C.text, lineHeight: 1.3 }}>Hans Weber</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: C.text, lineHeight: 1.3 }}>Roger</div>
             <div style={{ fontSize: 10, color: C.textL, lineHeight: 1.3 }}>Senior Dispatcher</div>
           </div>
         </div>

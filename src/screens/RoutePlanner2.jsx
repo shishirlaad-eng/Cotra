@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { C } from '../colors'
-import { plannerTrucks, savedRoutes, plannerOrders2 } from '../data'
+import { plannerTrucks, plannerOrders2 } from '../data'
+import RoutePopup from '../components/RoutePopup'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const UPPER_MAX_H_CM = 155
-const DEALERS = ['Zurich AMAG', 'Bern AutoZentrum', 'Basel Autohaus', 'Geneva Auto AG', 'Lucerne Motors', 'St. Gallen VW']
 
 const SLOT_META = {
   U1: { deck: 'upper', col: 1, maxH: UPPER_MAX_H_CM },
@@ -82,29 +82,29 @@ function autoArrange(route, orders) {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function TruckCard({ truck, selected, onClick, aiPlanned }) {
+function TruckCard({ truck, selected, onClick, planned }) {
   const sm = STATUS_META[truck.status] || STATUS_META.Maintenance
   const free = truck.slots - truck.usedSlots
-  const canPlan = truck.status === 'Available'
+  const canPlan = truck.status === 'Available' || planned
 
   return (
     <div
       onClick={() => canPlan && onClick(truck)}
       style={{
-        background: selected ? C.blueL : C.white,
-        border: `1.5px solid ${selected ? C.blueM : C.g2}`,
+        background: planned ? '#F0FDF4' : selected ? C.blueL : C.white,
+        border: `1.5px solid ${planned ? C.green : selected ? C.blueM : C.g2}`,
         borderRadius: 8,
         padding: '10px 12px',
         marginBottom: 8,
         cursor: canPlan ? 'pointer' : 'default',
-        opacity: truck.status === 'Maintenance' ? 0.5 : 1,
+        opacity: truck.status === 'Maintenance' && !planned ? 0.5 : 1,
         transition: 'all 0.15s',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
         <span style={{ fontWeight: 700, fontSize: 12.5, color: C.blue, fontFamily: 'monospace' }}>{truck.id}</span>
         <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
-          {aiPlanned && <span style={{ fontSize: 10.5, fontWeight: 800, color: '#fff', background: C.blue, padding: '2px 7px', borderRadius: 10 }}>AI planned</span>}
+          {planned && <span style={{ fontSize: 10.5, fontWeight: 800, color: '#fff', background: C.green, padding: '2px 7px', borderRadius: 10 }}>✓ Planned</span>}
           <span style={{ fontSize: 10.5, fontWeight: 700, color: sm.color, background: sm.bg, padding: '2px 7px', borderRadius: 10 }}>
             {sm.dot} {truck.status}
           </span>
@@ -114,157 +114,12 @@ function TruckCard({ truck, selected, onClick, aiPlanned }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ fontSize: 11, color: C.textL }}>{free} slot{free !== 1 ? 's' : ''} free · {truck.plate}</span>
         {canPlan && (
-          <span style={{ fontSize: 10.5, color: C.blueM, fontWeight: 600 }}>Plan Route →</span>
+          <span style={{ fontSize: 10.5, color: planned ? C.green : C.blueM, fontWeight: 600 }}>{planned ? 'View deck →' : 'Plan Route →'}</span>
         )}
       </div>
       {/* Capacity bar */}
       <div style={{ marginTop: 6, height: 4, background: C.g2, borderRadius: 2, overflow: 'hidden' }}>
         <div style={{ width: `${(truck.usedSlots / truck.slots) * 100}%`, height: '100%', background: truck.usedSlots > 7 ? C.amber : C.blueM, borderRadius: 2, transition: 'width 0.3s' }} />
-      </div>
-    </div>
-  )
-}
-
-function RoutePopup({ truck, onClose, onPlan }) {
-  const [tab, setTab] = useState('saved')
-  const [selRoute, setSelRoute] = useState(null)
-  const [customStops, setCustomStops] = useState([{ id: 1, dealer: '' }])
-
-  const countForRoute = (route) =>
-    route.stops.reduce((sum, s) => sum + plannerOrders2.filter(o => o.to === s.dealer).length, 0)
-
-  const activeRoute = tab === 'saved' ? selRoute : (
-    customStops.filter(s => s.dealer).length >= 1
-      ? { id: 'custom', name: 'Custom Route', stops: customStops.filter(s => s.dealer).map((s, i) => ({ stopNum: i + 1, dealer: s.dealer, city: s.dealer.split(' ')[0], eta: '—', km: '—' })) }
-      : null
-  )
-
-  const addStop = () => setCustomStops(s => [...s, { id: Date.now(), dealer: '' }])
-  const removeStop = (id) => setCustomStops(s => s.filter(x => x.id !== id))
-  const updateStop = (id, dealer) => setCustomStops(s => s.map(x => x.id === id ? { ...x, dealer } : x))
-
-  return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(13,31,60,0.55)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ background: C.white, borderRadius: 12, width: 560, maxHeight: '85vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
-        {/* Header */}
-        <div style={{ padding: '18px 24px 14px', borderBottom: `1px solid ${C.g2}`, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: C.text }}>🗺 Plan Route</div>
-            <div style={{ fontSize: 12.5, color: C.textL, marginTop: 2 }}>{truck.id} · {truck.driver} · {truck.slots - truck.usedSlots} slots free</div>
-          </div>
-          <button onClick={onClose} style={{ background: C.g1, border: 'none', borderRadius: 6, width: 28, height: 28, cursor: 'pointer', fontSize: 14, color: C.textL }}>✕</button>
-        </div>
-
-        {/* Tabs */}
-        <div style={{ display: 'flex', borderBottom: `1px solid ${C.g2}`, padding: '0 24px' }}>
-          {['saved','custom'].map(t => (
-            <button key={t} onClick={() => setTab(t)} style={{
-              padding: '10px 16px', border: 'none', background: 'transparent', cursor: 'pointer',
-              fontSize: 13, fontWeight: tab === t ? 700 : 400,
-              color: tab === t ? C.blue : C.textL,
-              borderBottom: tab === t ? `2px solid ${C.blue}` : '2px solid transparent',
-              marginBottom: -1,
-            }}>
-              {t === 'saved' ? '📋 Saved Routes' : '✏️ Custom Route'}
-            </button>
-          ))}
-        </div>
-
-        {/* Body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
-          {tab === 'saved' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {savedRoutes.map(route => {
-                const count = countForRoute(route)
-                const isSelected = selRoute?.id === route.id
-                return (
-                  <div key={route.id} onClick={() => setSelRoute(route)} style={{
-                    border: `2px solid ${isSelected ? C.blue : C.g2}`,
-                    borderRadius: 8,
-                    padding: '12px 14px',
-                    cursor: 'pointer',
-                    background: isSelected ? C.blueL : C.white,
-                    transition: 'all 0.15s',
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                      <div style={{ fontWeight: 700, fontSize: 13.5, color: isSelected ? C.blue : C.text }}>{route.name}</div>
-                      <div style={{ fontSize: 11.5, fontWeight: 700, color: count > 0 ? C.green : C.textL, background: count > 0 ? '#D1FAE5' : C.g1, padding: '2px 8px', borderRadius: 10 }}>
-                        {count} car{count !== 1 ? 's' : ''} available
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
-                      {route.stops.map((s, i) => (
-                        <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <span style={{ fontSize: 11, background: STOP_BG[i] || C.g1, color: STOP_COLORS[i] || C.textL, padding: '2px 8px', borderRadius: 10, fontWeight: 600 }}>
-                            {i + 1}. {s.city}
-                          </span>
-                          {i < route.stops.length - 1 && <span style={{ fontSize: 10, color: C.g2 }}>→</span>}
-                        </span>
-                      ))}
-                    </div>
-                    <div style={{ marginTop: 6, fontSize: 11, color: C.textL }}>
-                      ETAs: {route.stops.map(s => s.eta).join(' · ')}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-
-          {tab === 'custom' && (
-            <div>
-              <div style={{ fontSize: 12.5, color: C.textL, marginBottom: 12 }}>Add stops in delivery order. Stop 1 = first delivery.</div>
-              {customStops.map((stop, i) => (
-                <div key={stop.id} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: STOP_BG[i] || C.g1, border: `2px solid ${STOP_COLORS[i] || C.g2}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: STOP_COLORS[i] || C.textL, flexShrink: 0 }}>
-                    {i + 1}
-                  </div>
-                  <select
-                    value={stop.dealer}
-                    onChange={e => updateStop(stop.id, e.target.value)}
-                    style={{ flex: 1, border: `1px solid ${C.g2}`, borderRadius: 6, padding: '7px 10px', fontSize: 12.5, color: C.text, fontFamily: 'Inter, sans-serif', outline: 'none', background: C.white }}
-                  >
-                    <option value="">— Select dealer —</option>
-                    {DEALERS.map(d => (
-                      <option key={d} value={d}>{d} ({plannerOrders2.filter(o => o.to === d).length} orders)</option>
-                    ))}
-                  </select>
-                  {customStops.length > 1 && (
-                    <button onClick={() => removeStop(stop.id)} style={{ background: '#FEE2E2', border: 'none', borderRadius: 5, padding: '6px 9px', cursor: 'pointer', color: C.red, fontSize: 12 }}>✕</button>
-                  )}
-                </div>
-              ))}
-              <button onClick={addStop} style={{ border: `1.5px dashed ${C.g2}`, borderRadius: 6, padding: '7px 14px', background: 'transparent', cursor: 'pointer', color: C.blueM, fontSize: 12.5, fontWeight: 600, width: '100%', marginTop: 4 }}>
-                + Add Stop
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div style={{ padding: '14px 24px', borderTop: `1px solid ${C.g2}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: C.g1 }}>
-          {activeRoute && (
-            <div style={{ fontSize: 12, color: C.textL }}>
-              {activeRoute.stops.length} stops · ~{countForRoute(activeRoute)} cars will be assigned
-            </div>
-          )}
-          {!activeRoute && <div />}
-          <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={onClose} style={{ padding: '8px 16px', border: `1px solid ${C.g2}`, borderRadius: 6, background: C.white, cursor: 'pointer', fontSize: 13, color: C.text }}>Cancel</button>
-            <button
-              onClick={() => activeRoute && onPlan(activeRoute)}
-              disabled={!activeRoute}
-              style={{
-                padding: '8px 20px', border: 'none', borderRadius: 6, cursor: activeRoute ? 'pointer' : 'not-allowed',
-                fontSize: 13, fontWeight: 700, color: '#fff',
-                background: activeRoute ? C.blue : C.g2,
-                transition: 'background 0.15s',
-              }}
-            >
-              ⚡ Auto-Plan This Route →
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   )
@@ -1463,23 +1318,26 @@ function ValidationModal({ truck, route, plan, onConfirm, onBack, verifyOnly }) 
 }
 
 // ─── Main Screen ─────────────────────────────────────────────────────────────
-export default function RoutePlanner2({ showToast, onDispatch, aiPlanReady = false }) {
-  const initialAITruck = aiPlanReady ? plannerTrucks[0] : null
-  const initialAIRoute = aiPlanReady ? savedRoutes[0] : null
-  const [phase, setPhase] = useState(aiPlanReady ? 'deck' : 'idle') // idle|route-popup|planning|deck|validation
-  const [selectedTruck, setSelectedTruck] = useState(initialAITruck)
-  const [activeRoute, setActiveRoute] = useState(initialAIRoute)
-  const [plan, setPlan] = useState(() => aiPlanReady ? autoArrange(initialAIRoute, plannerOrders2) : null)
+export default function RoutePlanner2({ showToast, onDispatch, plannedTrucks = [], routes }) {
+  const [phase, setPhase] = useState('idle') // idle|route-popup|planning|deck|validation
+  const [selectedTruck, setSelectedTruck] = useState(null)
+  const [activeRoute, setActiveRoute] = useState(null)
+  const [plan, setPlan] = useState(null)
   const [verified, setVerified] = useState(false)
 
-  const visibleTrucks = plannerTrucks.filter(t => t.status === 'Available')
+  const plannedFor = (truckId) => plannedTrucks.find(p => p.truckId === truckId)
+  const plannedIds = new Set(plannedTrucks.map(p => p.truckId))
+
+  // Available trucks plus any pre-planned trucks (which may not be "Available")
+  const visibleTrucks = plannerTrucks.filter(t => t.status === 'Available' || plannedIds.has(t.id))
 
   const handleSelectTruck = (truck) => {
     setSelectedTruck(truck)
-    if (aiPlanReady && truck.id === plannerTrucks[0].id) {
-      const route = savedRoutes[0]
-      setActiveRoute(route)
-      setPlan(autoArrange(route, plannerOrders2))
+    const planned = plannedFor(truck.id)
+    if (planned) {
+      setActiveRoute(planned.route)
+      setPlan(autoArrange(planned.route, plannerOrders2))
+      setVerified(false)
       setPhase('deck')
       return
     }
@@ -1513,7 +1371,7 @@ export default function RoutePlanner2({ showToast, onDispatch, aiPlanReady = fal
   }
 
   const handleConfirmDispatch = () => {
-    if (aiPlanReady && selectedTruck?.id === plannerTrucks[0].id) {
+    if (plannedFor(selectedTruck?.id)) {
       setVerified(true)
       showToast?.(`${selectedTruck.id} AI plan verified`, 'success')
       onDispatch?.({
@@ -1555,7 +1413,7 @@ export default function RoutePlanner2({ showToast, onDispatch, aiPlanReady = fal
               truck={truck}
               selected={selectedTruck?.id === truck.id}
               onClick={handleSelectTruck}
-              aiPlanned={aiPlanReady && truck.id === plannerTrucks[0].id}
+              planned={!!plannedFor(truck.id)}
             />
           ))}
         </div>
@@ -1593,7 +1451,7 @@ export default function RoutePlanner2({ showToast, onDispatch, aiPlanReady = fal
             route={activeRoute}
             plan={plan}
             onValidate={handleValidate}
-            aiPlanned={aiPlanReady && selectedTruck?.id === plannerTrucks[0].id}
+            aiPlanned={!!plannedFor(selectedTruck?.id)}
             verified={verified}
           />
         )}
@@ -1603,6 +1461,7 @@ export default function RoutePlanner2({ showToast, onDispatch, aiPlanReady = fal
       {phase === 'route-popup' && (
         <RoutePopup
           truck={selectedTruck}
+          routes={routes}
           onClose={() => { setPhase('idle'); setSelectedTruck(null) }}
           onPlan={handlePlan}
         />
@@ -1623,7 +1482,7 @@ export default function RoutePlanner2({ showToast, onDispatch, aiPlanReady = fal
           plan={plan}
           onBack={() => setPhase('deck')}
           onConfirm={handleConfirmDispatch}
-          verifyOnly={aiPlanReady && selectedTruck?.id === plannerTrucks[0].id}
+          verifyOnly={!!plannedFor(selectedTruck?.id)}
         />
       )}
     </div>

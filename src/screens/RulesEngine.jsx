@@ -1,14 +1,21 @@
 import { useState } from 'react'
 import { C } from '../colors'
 
+const DEALERS = ['Zurich AMAG', 'Bern AutoZentrum', 'Basel Autohaus', 'Geneva Auto AG', 'Lucerne Motors', 'St. Gallen VW']
+const STOP_COLORS = ['#1A56A0', '#1A7A4A', '#E8A020', '#7C3AED', '#DC2626']
+const STOP_BG     = ['#E8F1FB', '#D1FAE5', '#FEF3C7', '#EDE9FE', '#FEE2E2']
+
 const sectionMeta = {
   truck:    { label: 'Truck Rules',    color: C.blue,    icon: 'TRK', description: 'Configure operational limits for each truck.' },
   route:    { label: 'Route Rules',    color: '#7C3AED', icon: 'RTE', description: 'Shared constraints applied to every planned route.' },
+  routes:   { label: 'Routes',         color: '#0F6E56', icon: 'MAP', description: 'Define the delivery routes available across the system. Add new routes or review predefined ones.' },
   driver:   { label: 'Driver Rules',   color: C.green,   icon: 'DRV', description: 'Configure duty limits and assignments per driver.' },
   compound: { label: 'Compound Rules', color: C.amber,   icon: 'CMP', description: 'Shared staging and yard-operation constraints.' },
 }
 
-const TAB_ORDER = ['truck', 'route', 'driver', 'compound']
+// Rule-based tabs (entity → rules) vs. the Routes definition tab handled separately
+const RULE_TABS = ['truck', 'route', 'driver', 'compound']
+const TAB_ORDER = ['truck', 'route', 'routes', 'driver', 'compound']
 
 function Toggle({ enabled, onChange }) {
   return (
@@ -116,11 +123,116 @@ function EntityPanel({ entity, color, expanded, onToggleExpand, onToggleRule, on
   )
 }
 
-export default function RulesEngine({ rules, setRules, showToast }) {
+function RoutesManager({ routes, setRoutes, showToast }) {
+  const color = sectionMeta.routes.color
+  const [name, setName] = useState('')
+  const [stops, setStops] = useState([{ id: 1, dealer: '' }])
+
+  const addStop = () => setStops(s => [...s, { id: Date.now(), dealer: '' }])
+  const removeStop = (id) => setStops(s => s.filter(x => x.id !== id))
+  const updateStop = (id, dealer) => setStops(s => s.map(x => x.id === id ? { ...x, dealer } : x))
+
+  const validStops = stops.filter(s => s.dealer)
+  const canAdd = name.trim() && validStops.length >= 1
+
+  const handleAdd = () => {
+    if (!canAdd) return
+    const builtStops = validStops.map((s, i) => ({
+      stopNum: i + 1, dealer: s.dealer, city: s.dealer.split(' ')[0], eta: '—', km: '—',
+    }))
+    const newRoute = {
+      id: `R-${Date.now()}`,
+      name: name.trim(),
+      description: builtStops.map(s => s.city).join(' · '),
+      stops: builtStops,
+      custom: true,
+    }
+    setRoutes(prev => [...prev, newRoute])
+    setName('')
+    setStops([{ id: 1, dealer: '' }])
+    showToast(`Route "${newRoute.name}" added`, 'success')
+  }
+
+  const handleDelete = (routeId) => {
+    setRoutes(prev => prev.filter(r => r.id !== routeId))
+    showToast('Route removed', 'info')
+  }
+
+  const inputStyle = {
+    border: `1px solid ${C.g2}`, borderRadius: 6, padding: '8px 10px',
+    fontSize: 13, color: C.text, fontFamily: 'Inter, sans-serif', outline: 'none', background: C.white,
+  }
+
+  return (
+    <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+      {/* Existing routes */}
+      <div style={{ flex: '1 1 380px', minWidth: 320, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {routes.map(route => (
+          <div key={route.id} style={{ background: C.white, border: `1px solid ${C.g2}`, borderRadius: 9, padding: '13px 16px', borderLeft: `4px solid ${color}` }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 14, fontWeight: 800, color: C.text }}>{route.name}</span>
+                {route.custom
+                  ? <span style={{ fontSize: 10, fontWeight: 700, color, background: `${color}14`, padding: '2px 8px', borderRadius: 10 }}>Custom</span>
+                  : <span style={{ fontSize: 10, fontWeight: 700, color: C.textL, background: C.g1, padding: '2px 8px', borderRadius: 10 }}>Predefined</span>}
+              </div>
+              <button onClick={() => handleDelete(route.id)} title="Delete route" style={{ background: '#FEE2E2', border: 'none', borderRadius: 5, padding: '4px 9px', cursor: 'pointer', color: C.red, fontSize: 12 }}>✕</button>
+            </div>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+              {route.stops.map((s, i) => (
+                <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ fontSize: 11, background: STOP_BG[i] || C.g1, color: STOP_COLORS[i] || C.textL, padding: '2px 8px', borderRadius: 10, fontWeight: 600 }}>
+                    {i + 1}. {s.dealer}
+                  </span>
+                  {i < route.stops.length - 1 && <span style={{ fontSize: 10, color: C.g2 }}>→</span>}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Add route form */}
+      <div style={{ flex: '0 0 340px', background: C.white, border: `1px solid ${C.g2}`, borderRadius: 9, padding: 16 }}>
+        <div style={{ fontSize: 14, fontWeight: 800, color: C.text, marginBottom: 4 }}>Add New Route</div>
+        <div style={{ fontSize: 12, color: C.textL, marginBottom: 14 }}>Name the route and add dealer stops in delivery order.</div>
+
+        <label style={{ fontSize: 11, fontWeight: 700, color: C.textL, textTransform: 'uppercase', letterSpacing: 0.4 }}>Route name</label>
+        <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Route ZH→BE" style={{ ...inputStyle, width: '100%', margin: '6px 0 16px' }} />
+
+        <label style={{ fontSize: 11, fontWeight: 700, color: C.textL, textTransform: 'uppercase', letterSpacing: 0.4 }}>Stops</label>
+        <div style={{ margin: '8px 0' }}>
+          {stops.map((stop, i) => (
+            <div key={stop.id} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+              <div style={{ width: 24, height: 24, borderRadius: '50%', background: STOP_BG[i] || C.g1, border: `2px solid ${STOP_COLORS[i] || C.g2}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: STOP_COLORS[i] || C.textL, flexShrink: 0 }}>{i + 1}</div>
+              <select value={stop.dealer} onChange={e => updateStop(stop.id, e.target.value)} style={{ ...inputStyle, flex: 1, padding: '7px 10px', fontSize: 12.5 }}>
+                <option value="">— Select dealer —</option>
+                {DEALERS.map(d => <option key={d} value={d}>{d}</option>)}
+              </select>
+              {stops.length > 1 && (
+                <button onClick={() => removeStop(stop.id)} style={{ background: '#FEE2E2', border: 'none', borderRadius: 5, padding: '6px 9px', cursor: 'pointer', color: C.red, fontSize: 12 }}>✕</button>
+              )}
+            </div>
+          ))}
+          <button onClick={addStop} style={{ border: `1.5px dashed ${C.g2}`, borderRadius: 6, padding: '7px 14px', background: 'transparent', cursor: 'pointer', color: C.blueM, fontSize: 12.5, fontWeight: 600, width: '100%', marginTop: 4 }}>
+            + Add Stop
+          </button>
+        </div>
+
+        <button onClick={handleAdd} disabled={!canAdd} style={{
+          marginTop: 8, width: '100%', background: canAdd ? color : C.g2, color: '#fff', border: 'none',
+          borderRadius: 6, padding: '10px 0', fontSize: 13, fontWeight: 700, cursor: canAdd ? 'pointer' : 'default',
+        }}>Add Route</button>
+      </div>
+    </div>
+  )
+}
+
+export default function RulesEngine({ rules, setRules, routes = [], setRoutes, showToast }) {
   const [activeTab, setActiveTab] = useState('truck')
   const [expanded, setExpanded] = useState(() => {
     const initial = {}
-    TAB_ORDER.forEach(sectionKey => {
+    RULE_TABS.forEach(sectionKey => {
       const ids = Object.keys(rules[sectionKey])
       initial[sectionKey] = ids.length ? ids[0] : null
     })
@@ -160,7 +272,8 @@ export default function RulesEngine({ rules, setRules, showToast }) {
   }
 
   const meta = sectionMeta[activeTab]
-  const entities = Object.values(rules[activeTab])
+  const isRoutesTab = activeTab === 'routes'
+  const entities = isRoutesTab ? [] : Object.values(rules[activeTab])
 
   return (
     <div style={{ padding: 24, width: '100%', boxSizing: 'border-box', fontFamily: 'Inter, sans-serif' }}>
@@ -196,7 +309,7 @@ export default function RulesEngine({ rules, setRules, showToast }) {
               <span style={{
                 fontSize: 10.5, fontWeight: 700, color: isActive ? tabMeta.color : C.textL,
                 background: isActive ? `${tabMeta.color}12` : C.g1, padding: '2px 7px', borderRadius: 10,
-              }}>{Object.keys(rules[sectionKey]).length}</span>
+              }}>{sectionKey === 'routes' ? routes.length : Object.keys(rules[sectionKey]).length}</span>
             </button>
           )
         })}
@@ -206,32 +319,38 @@ export default function RulesEngine({ rules, setRules, showToast }) {
       <div style={{ marginBottom: 16 }}>
         <div style={{ fontSize: 13, color: C.textL, marginBottom: 12 }}>{meta.description}</div>
 
-        {entities.map(entity => (
-          <EntityPanel
-            key={entity.id}
-            entity={entity}
-            color={meta.color}
-            expanded={expanded[activeTab] === entity.id}
-            onToggleExpand={() => toggleExpand(activeTab, entity.id)}
-            onToggleRule={ruleId => toggleRule(activeTab, entity.id, ruleId)}
-            onValueChange={(ruleId, value) => updateValue(activeTab, entity.id, ruleId, value)}
-          />
-        ))}
+        {isRoutesTab ? (
+          <RoutesManager routes={routes} setRoutes={setRoutes} showToast={showToast} />
+        ) : (
+          entities.map(entity => (
+            <EntityPanel
+              key={entity.id}
+              entity={entity}
+              color={meta.color}
+              expanded={expanded[activeTab] === entity.id}
+              onToggleExpand={() => toggleExpand(activeTab, entity.id)}
+              onToggleRule={ruleId => toggleRule(activeTab, entity.id, ruleId)}
+              onValueChange={(ruleId, value) => updateValue(activeTab, entity.id, ruleId, value)}
+            />
+          ))
+        )}
       </div>
 
-      <div style={{
-        position: 'sticky', bottom: 0, background: C.white, border: `1px solid ${C.g2}`, borderRadius: 8,
-        padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        boxShadow: '0 -4px 16px rgba(0,0,0,0.05)',
-      }}>
-        <div style={{ fontSize: 12, color: dirty ? C.amber : C.textL, fontWeight: dirty ? 700 : 400 }}>
-          {dirty ? 'Unsaved profile changes' : 'All rule profiles saved'}
+      {!isRoutesTab && (
+        <div style={{
+          position: 'sticky', bottom: 0, background: C.white, border: `1px solid ${C.g2}`, borderRadius: 8,
+          padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          boxShadow: '0 -4px 16px rgba(0,0,0,0.05)',
+        }}>
+          <div style={{ fontSize: 12, color: dirty ? C.amber : C.textL, fontWeight: dirty ? 700 : 400 }}>
+            {dirty ? 'Unsaved profile changes' : 'All rule profiles saved'}
+          </div>
+          <button onClick={handleSave} disabled={!dirty} style={{
+            background: dirty ? C.blue : C.g2, color: dirty ? '#fff' : C.textL, border: 'none',
+            borderRadius: 6, padding: '8px 20px', fontSize: 13, fontWeight: 700, cursor: dirty ? 'pointer' : 'default',
+          }}>Save Changes</button>
         </div>
-        <button onClick={handleSave} disabled={!dirty} style={{
-          background: dirty ? C.blue : C.g2, color: dirty ? '#fff' : C.textL, border: 'none',
-          borderRadius: 6, padding: '8px 20px', fontSize: 13, fontWeight: 700, cursor: dirty ? 'pointer' : 'default',
-        }}>Save Changes</button>
-      </div>
+      )}
     </div>
   )
 }

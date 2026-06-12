@@ -68,6 +68,16 @@ body {
   pointer-events: none;
 }
 
+@keyframes chat-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+.chat-dot {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: #6B7A90; margin: 0 2px;
+  animation: chat-bounce 1s infinite ease-in-out;
+}
+
 @keyframes checking {
   0%   { width: 0%; }
   100% { width: 100%; }

@@ -7,8 +7,9 @@ import OrderQueue from './screens/OrderQueue'
 import RoutePlanner2 from './screens/RoutePlanner2'
 import RulesEngine from './screens/RulesEngine'
 import LanePlan from './screens/LanePlan'
+import ChatBot from './components/ChatBot'
 import {
-  initialOrders, initialTrucks, initialRules,
+  initialOrders, initialTrucks, initialRules, savedRoutes,
 } from './data'
 
 const SCREEN_LABELS = {
@@ -28,7 +29,10 @@ export default function App() {
   const [toast, setToast]                 = useState(null)
   const [screenFilters, setScreenFilters] = useState({})
   const [activeLanePlan, setActiveLanePlan] = useState(null)
-  const [aiPlanReady, setAiPlanReady]     = useState(false)
+  // Route definitions (seeded with predefined routes; editable in Rules Engine → Routes tab)
+  const [routes, setRoutes] = useState(savedRoutes)
+  // Trucks that have been pre-planned (from AI Planner or Order Queue) → [{ truckId, route, orderId, ai }]
+  const [plannedTrucks, setPlannedTrucks] = useState([])
 
   const showToast = useCallback((msg, type = 'info') => {
     setToast({ msg, type, key: Date.now() })
@@ -52,16 +56,32 @@ export default function App() {
       ? { ...order, status: 'Assigned', truckId: 'TRK-025', dispatcher: 'AI Planner' }
       : order
     ))
-    setAiPlanReady(true)
+    setPlannedTrucks(prev => [
+      ...prev.filter(p => p.truckId !== 'TRK-025'),
+      { truckId: 'TRK-025', route: routes[0], orderId: null, ai: true },
+    ])
     setScreen('planner2')
     showToast(`${plannedOrderIds.length} cars planned on TRK-025`, 'success')
+  }, [showToast, routes])
+
+  // Called from Order Queue when a vehicle is planned onto a truck for a route
+  const handleOrderPlan = useCallback(({ orderId, truckId, route }) => {
+    setOrders(prev => prev.map(order => order.id === orderId
+      ? { ...order, status: 'Assigned', truckId, dispatcher: 'Roger' }
+      : order
+    ))
+    setPlannedTrucks(prev => [
+      ...prev.filter(p => p.truckId !== truckId),
+      { truckId, route, orderId },
+    ])
+    showToast(`${orderId} planned on ${truckId} · ${route.name}`, 'success')
   }, [showToast])
 
   const screens = {
     dashboard2:  <Dashboard2 trucks={trucks} />,
-    orders:      <OrderQueue orders={orders} setOrders={setOrders} trucks={trucks} filters={screenFilters.orders} showToast={showToast} onAIPlan={handleAIPlan} />,
-    rules:       <RulesEngine rules={rules} setRules={setRules} showToast={showToast} />,
-    planner2:    <RoutePlanner2 showToast={showToast} onDispatch={handleDispatch} aiPlanReady={aiPlanReady} />,
+    orders:      <OrderQueue orders={orders} setOrders={setOrders} rules={rules} routes={routes} filters={screenFilters.orders} showToast={showToast} onAIPlan={handleAIPlan} onOrderPlan={handleOrderPlan} />,
+    rules:       <RulesEngine rules={rules} setRules={setRules} routes={routes} setRoutes={setRoutes} showToast={showToast} />,
+    planner2:    <RoutePlanner2 showToast={showToast} onDispatch={handleDispatch} plannedTrucks={plannedTrucks} routes={routes} />,
     laneplan:    <LanePlan activePlan={activeLanePlan} onNavigate={navigate} />,
   }
 
@@ -84,6 +104,7 @@ export default function App() {
           onClose={() => setToast(null)}
         />
       )}
+      <ChatBot orders={orders} trucks={trucks} onNavigate={navigate} />
     </div>
   )
 }

@@ -4,7 +4,7 @@ import { dispatchers, perfDailyOrders } from '../data'
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts'
 
 const planningRates = [
-  { name: 'Hans Weber', rate: 12 }, { name: 'Klaus Zimmermann', rate: 8 },
+  { name: 'Roger', rate: 12 }, { name: 'Klaus Zimmermann', rate: 8 },
   { name: 'Maria Schneider', rate: 22 }, { name: 'Peter Brunner', rate: 38 },
 ]
 const efficiencyData = dispatchers.map((d, i) => ({ ...d, violationsCaught: [3, 5, 7, 1][i], avgAssignmentTime: ['1m 12s', '1m 48s', '0m 58s', '2m 34s'][i] }))
