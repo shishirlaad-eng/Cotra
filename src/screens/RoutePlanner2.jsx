@@ -1318,7 +1318,7 @@ function ValidationModal({ truck, route, plan, onConfirm, onBack, verifyOnly }) 
 }
 
 // ─── Main Screen ─────────────────────────────────────────────────────────────
-export default function RoutePlanner2({ showToast, onDispatch, plannedTrucks = [], routes }) {
+export default function RoutePlanner2({ showToast, onDispatch, plannedTrucks = [], routes, focusTruckId, onFocusConsumed, demo }) {
   const [phase, setPhase] = useState('idle') // idle|route-popup|planning|deck|validation
   const [selectedTruck, setSelectedTruck] = useState(null)
   const [activeRoute, setActiveRoute] = useState(null)
@@ -1343,6 +1343,20 @@ export default function RoutePlanner2({ showToast, onDispatch, plannedTrucks = [
     }
     setPhase('route-popup')
   }
+
+  // Auto-open the deck for a truck just planned from Order Queue / AI Planner
+  useEffect(() => {
+    if (!focusTruckId) return
+    const truck = plannerTrucks.find(t => t.id === focusTruckId)
+    if (truck) handleSelectTruck(truck)
+    onFocusConsumed?.()
+  }, [focusTruckId])
+
+  // Dev/demo: auto-advance for headless capture
+  useEffect(() => {
+    if (demo === 'validate' && phase === 'deck' && plan) setPhase('validation')
+    if (demo === 'lane' && phase === 'deck' && plan) handleConfirmDispatch()
+  }, [demo, phase, plan])
 
   const handlePlan = (route) => {
     setActiveRoute(route)

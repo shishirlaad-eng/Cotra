@@ -20,8 +20,14 @@ const SCREEN_LABELS = {
   laneplan:    'Lane Plan',
 }
 
+// Dev/demo URL params — let headless capture specific screens, e.g. ?screen=orders, ?demo=deck, ?demo=popup, ?demo=validate
+const _params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams()
+const DEMO = _params.get('demo') || null
+const SCREEN_PARAM = _params.get('screen')
+const DECK_DEMO = DEMO === 'deck' || DEMO === 'validate' || DEMO === 'lane'
+
 export default function App() {
-  const [screen, setScreen]               = useState('dashboard2')
+  const [screen, setScreen]               = useState(DECK_DEMO ? 'planner2' : (SCREEN_PARAM || 'dashboard2'))
   const [collapsed, setCollapsed]         = useState(false)
   const [orders, setOrders]               = useState(initialOrders)
   const [trucks]                          = useState(initialTrucks)
@@ -32,7 +38,9 @@ export default function App() {
   // Route definitions (seeded with predefined routes; editable in Rules Engine → Routes tab)
   const [routes, setRoutes] = useState(savedRoutes)
   // Trucks that have been pre-planned (from AI Planner or Order Queue) → [{ truckId, route, orderId, ai }]
-  const [plannedTrucks, setPlannedTrucks] = useState([])
+  const [plannedTrucks, setPlannedTrucks] = useState(DECK_DEMO ? [{ truckId: 'TRK-025', route: savedRoutes[0], orderId: 'CH-2843' }] : [])
+  // Truck to auto-open on the Route Planner deck after planning from Order Queue / AI Planner
+  const [focusTruckId, setFocusTruckId] = useState(DECK_DEMO ? 'TRK-025' : null)
 
   const showToast = useCallback((msg, type = 'info') => {
     setToast({ msg, type, key: Date.now() })
@@ -60,6 +68,7 @@ export default function App() {
       ...prev.filter(p => p.truckId !== 'TRK-025'),
       { truckId: 'TRK-025', route: routes[0], orderId: null, ai: true },
     ])
+    setFocusTruckId('TRK-025')
     setScreen('planner2')
     showToast(`${plannedOrderIds.length} cars planned on TRK-025`, 'success')
   }, [showToast, routes])
@@ -74,14 +83,16 @@ export default function App() {
       ...prev.filter(p => p.truckId !== truckId),
       { truckId, route, orderId },
     ])
+    setFocusTruckId(truckId)
+    setScreen('planner2')
     showToast(`${orderId} planned on ${truckId} · ${route.name}`, 'success')
   }, [showToast])
 
   const screens = {
     dashboard2:  <Dashboard2 trucks={trucks} />,
-    orders:      <OrderQueue orders={orders} setOrders={setOrders} rules={rules} routes={routes} filters={screenFilters.orders} showToast={showToast} onAIPlan={handleAIPlan} onOrderPlan={handleOrderPlan} />,
+    orders:      <OrderQueue orders={orders} setOrders={setOrders} rules={rules} routes={routes} filters={screenFilters.orders} showToast={showToast} onAIPlan={handleAIPlan} onOrderPlan={handleOrderPlan} demo={DEMO} />,
     rules:       <RulesEngine rules={rules} setRules={setRules} routes={routes} setRoutes={setRoutes} showToast={showToast} />,
-    planner2:    <RoutePlanner2 showToast={showToast} onDispatch={handleDispatch} plannedTrucks={plannedTrucks} routes={routes} />,
+    planner2:    <RoutePlanner2 showToast={showToast} onDispatch={handleDispatch} plannedTrucks={plannedTrucks} routes={routes} focusTruckId={focusTruckId} onFocusConsumed={() => setFocusTruckId(null)} demo={DEMO} />,
     laneplan:    <LanePlan activePlan={activeLanePlan} onNavigate={navigate} />,
   }
 

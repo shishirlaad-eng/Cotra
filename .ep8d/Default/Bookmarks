@@ -1,0 +1,106 @@
+{
+   "checksum": "eb0884bde06cb08a835053bfd66fa10d",
+   "roots": {
+      "bookmark_bar": {
+         "children": [  ],
+         "date_added": "13426262295995171",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
+         "id": "1",
+         "name": "Favorites bar",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "other": {
+         "children": [ {
+            "date_added": "13381411542017719",
+            "date_last_used": "0",
+            "guid": "d4ee292e-b276-4acb-8004-7804da10d403",
+            "id": "7",
+            "name": "EMPLOYEE SELF SERVICE :: :: Employee Dashboard",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://ess.hiddenbrains.net/dashboard",
+            "visit_count": 0
+         }, {
+            "date_added": "13382203147508539",
+            "date_last_used": "0",
+            "guid": "79a4d7ff-02fb-4f1a-9250-94871094e1d2",
+            "id": "8",
+            "name": "Active Hiring - USA_2025 - Google Sheets",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://docs.google.com/spreadsheets/d/1iVv14FsLe9hSbl8UKT48Rtw_yaQAQiS-HV-esn07t4E/edit?pli=1&gid=0#gid=0",
+            "visit_count": 0
+         }, {
+            "date_added": "13382623904160880",
+            "date_last_used": "0",
+            "guid": "d506f688-7d4f-4179-8641-b9505a5053ad",
+            "id": "9",
+            "name": "US Trip 2025 - Linkedin Connections - Google Sheets",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://docs.google.com/spreadsheets/d/1gtT--zUgpNLY3fpnPKgkapfMYpzGBvWCg0mcYtXM23g/edit?pli=1&gid=1209263115#gid=1209263115",
+            "visit_count": 0
+         }, {
+            "date_added": "13382724129226055",
+            "date_last_used": "0",
+            "guid": "b0e1cb0a-2048-4aba-8f9a-6e5274c3951f",
+            "id": "10",
+            "name": "NDA - HB Services India - Google Sheets",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://docs.google.com/spreadsheets/d/1Ymv-thoWcciNcbtN51fRXmDa7H3JBZKXW3b51gVUT-Q/edit?pli=1&gid=152267739#gid=152267739",
+            "visit_count": 0
+         }, {
+            "date_added": "13383224305935553",
+            "date_last_used": "0",
+            "guid": "fe108876-122a-4a83-b240-87b2fef46213",
+            "id": "11",
+            "name": "Business Trip 2024/2025 - Prospects - Google Sheets",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://docs.google.com/spreadsheets/d/1M7oucABnVtI5v5Hn7fybHmfmisZ4bfhV_6SxiGXaZk4/edit?gid=93312847#gid=93312847",
+            "visit_count": 0
+         } ],
+         "date_added": "13426262295995171",
+         "date_last_used": "0",
+         "date_modified": "13383224305935553",
+         "guid": "82b081ec-3dd3-529c-8475-ab6c344590dd",
+         "id": "2",
+         "name": "Other favorites",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [  ],
+         "date_added": "13426262295995171",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "4cf2e351-0e85-532b-bb37-df045d8f8d0f",
+         "id": "3",
+         "name": "Mobile favorites",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "workspaces_v2": {
+         "children": [  ],
+         "date_added": "13426262295995171",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "75aa6670-344f-549d-b742-660f029506ab",
+         "id": "5",
+         "name": "Workspaces",
+         "source": "unknown",
+         "type": "folder"
+      }
+   },
+   "sync_metadata": "CjEKDgiIgQISCLV+h3OaAQAAEgAqGFFta2FqTTYzSEdsbkkwV3dla1VkTHc9PUgDoAYHEo4BCAMSiQEKHG5qZ0R1ODhlQ3J2WHA4NnBEN2ZIR2NxRnA4OD0SJGM2OTE4ZjNkLTNiZjUtNWU0YS1iZWFjLTZmYmE3YzZmODMyNxgAIAAoADDKzPjA3TI4/dr4wN0yQP3a+MDdMkoceXpOQjAxY241NEE3Y1JVMHVUKy9QZ21UdFVvPVoAZQAAAADCPgJgABKOAQgFEokBChx3UkJyWkwrNlBBOWF2S2dqTlA3SlhETGNmdnM9EiRmMjI4MDk2Mi0zZWJiLTU5MjQtYjFjYy1iODJjOGY3M2U1ZjQYACAAKAAwtP2dnKczONj/nZynM0DY/52cpzNKHG5teDY1c1FEdnhJOFRnRWV2K0ErbnR0b1NuND1aAGUAAAAAwj4CYAASrQEICxKoAQocTHpMMnpyUXphQlRpWE9ZczAyVmxEbTFza3ZvPRIkZmUxMDg4NzYtMTIyYS00YTgzLWIyNDAtODdiMmZlZjQ2MjEzGAAgACgAMOPClsHdMjjmzZbB3TJA5s2Wwd0yShxZeXdadjRRTUgrOHkvVC8xaFR2QlZlbEhXV2c9Wh8iHfVQWFpHZWRYRWRXSy8vYjd2c0IxMHYrTDJEdHc9ZQCoOQbCPgJgBRKtAQgIEqgBChxTeFJGQjRraVppa3YySmwrVGJ6c3lJVVF3MVU9EiQ3OWE0ZDdmZi0wMmZiLTRmMWEtOTI1MC05NDg3MTA5NGUxZDIYACAAKAAw5sKWwd0yOOrOlsHdMkDqzpbB3TJKHFYvSG1wQVBOdnBCcVRtZ3RsRXpJUEt0MWVyND1aHyIdqTJTN2VtRldCNytjUU5UQXlZaloyMkFqeWJyTT1lAKg5BsI+AmAFEq0BCAoSqAEKHE94K3gwdldEaWxOU1N0clR3bXhiNUlncHhOMD0SJGIwZTFjYjBhLTIwNDgtNGFiYS04ZjlhLTZlNTI3NGMzOTUxZhgAIAAoADDkwpbB3TI4gc6Wwd0yQIHOlsHdMkocQmFaR0xQdktPUE9KdmV0QmlyT3BmZ1ZJakpnPVofIh3qakJSSHliYWpXekxIbHp0dHJUbWVOVFJlTlRnPWUAqDkGwj4CYAUSrQEICRKoAQocWktUeHdSTVFrSEdLZEM0cGhpM212WHBPN0prPRIkZDUwNmY2ODgtN2Q0Zi00MTc5LTg2NDEtYjk1MDVhNTA1M2FkGAAgACgAMOXClsHdMjjJzpbB3TJAyc6Wwd0yShwxY0c0T0pBQVVjWXNQNU9rQkdBL2xxVE5ZbGM9Wh8iHdRDT3FYNmMrcXZxK0lueThoak1XQnV2UWUvZTA9ZQCoOQbCPgJgBRKsAQgHEqcBChxNakdscEFzNFBUOEVUTDZoZy9TUWtOcXM0RUU9EiRkNGVlMjkyZS1iMjc2LTRhY2ItODAwNC03ODA0ZGExMGQ0MDMYACAAKAAw58KWwd0yOIjPlsHdMkCIz5bB3TJKHFhPVUJxNFlUTjRVZW95RmhHVjIwQVdpT1JXaz1aHiIcUnFtSE5HUXBjWEhmRU0wWUdtdkhIRnZQb1lBPWVIvBSnwj4CYAUSjgEIAhKJAQocWWNTVG9udkVTUHdxQ3M0TDJjclZodjY4TDk4PRIkM2Y4MTg0YWUtZDU5YS01OTlkLWEzMTMtM2I0ZjBiZTg2MzU3GAAgACgAMMXM+MDdMjil2vjA3TJApdr4wN0yShxvUFZraHdCUmJWNjVLQ1dSMitJT05IV29PdTg9WgBlAAAAAMI+AmAAEo4BCAESiQEKHHl4Si82ZnZrZWNyN2twNUVRekI0dFdMcGRiRT0SJDM1Mzg3ZDFhLTViMWUtNTc1ZS05ZDA5LWNhNGZlMTk0MjdiMhgAIAAoADDEzPjA3TI4idr4wN0yQIna+MDdMkocYVJDV0xnaEY5YjVJbnFLSUR2dUovanZRa0ZjPVoAZQAAAADCPgJgADAAOAA=",
+   "version": 1
+}

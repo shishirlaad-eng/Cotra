@@ -130,7 +130,7 @@ function ExpandedRow({ order, vehicle }) {
   )
 }
 
-export default function OrderQueue({ orders, setOrders, rules, routes, filters, showToast, onAIPlan, onOrderPlan }) {
+export default function OrderQueue({ orders, setOrders, rules, routes, filters, showToast, onAIPlan, onOrderPlan, demo }) {
   const [planningOrder, setPlanningOrder] = useState(null)
   const [aiPlanning, setAiPlanning] = useState(false)
   const [plannedOrders, setPlannedOrders] = useState([])
@@ -153,6 +153,14 @@ export default function OrderQueue({ orders, setOrders, rules, routes, filters, 
   }, [filters])
 
   const getVehicle = id => vehicleCatalogue.find(v => v.id === id) || {}
+
+  // Dev/demo: auto-open the Plan Route popup for headless capture
+  useEffect(() => {
+    if (demo === 'popup') {
+      const first = orders.find(o => o.status === 'Unassigned')
+      if (first) setPlanningOrder({ ...first, vehicle: getVehicle(first.vehicleId) })
+    }
+  }, [demo])
 
   const unassigned = useMemo(() => orders.filter(o => o.status === 'Unassigned'), [orders])
 
